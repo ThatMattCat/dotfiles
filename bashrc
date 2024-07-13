@@ -7,7 +7,6 @@ esac
 
 ulimit -c 0
 shopt -s checkwinsize
-shopt -s reedit
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 if [ -f ~/.bash_aliases ]; then
@@ -42,6 +41,27 @@ fi
 
 complete -o default -F __start_kubectl k
 source <(kubectl completion bash)
+
+# Start SSH Agent if not already running
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    # Check for a running ssh-agent
+    ssh_agent_pid=$(pgrep -u "$USER" ssh-agent)
+    if [ -z "$ssh_agent_pid" ]; then
+        # Start a new ssh-agent
+        eval "$(ssh-agent -s)"
+        echo "Started new SSH agent"
+    else
+        # Connect to the running ssh-agent
+        export SSH_AGENT_PID=$ssh_agent_pid
+        export SSH_AUTH_SOCK=$(find /tmp -uid $(id -u) -type s -name agent.\* 2>/dev/null | head -n 1)
+        if [ -z "$SSH_AUTH_SOCK" ]; then
+            echo "Found SSH agent but couldn't locate socket. Starting new agent."
+            eval "$(ssh-agent -s)"
+        else
+            echo "Connected to running SSH agent"
+        fi
+    fi
+fi
 
 # Eternal bash history.
 # ---------------------

@@ -11,13 +11,14 @@ sudo apt install -y vim-gtk3 #xclip
 #[[ -f ~/.bashrc && $(mv ~/.bashrc ~/dotfiles/.bashrc.orig) ]]
 #[[ -f ~/.bash_aliases && $(mv ~/.bash_aliases ~/dotfiles/.bash_aliases.orig) ]]
 
-# Create symlinks
+# Create symlinks and prep vim folders
 ln -sf ~/dotfiles/vimrc ~/.vimrc
 rm -rf ~/.vim
 cp -r -l ~/dotfiles/vim ~/.vim
 ln -sf ~/dotfiles/bashrc ~/.bashrc
 ln -sf ~/dotfiles/bash_aliases ~/.bash_aliases
 
+# Install Vim plugins, colors, etc
 if [ ! -f ~/.vim/autoload/plug.vim ]; then
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
@@ -27,3 +28,14 @@ if [ ! -f ~/.vim/colors/molokai.vim ]; then
 fi
 
 vim +PlugInstall +qall
+
+# Configure Git if not already configured
+if [ -z "$(git config --global user.name)" ]; then
+    read -p "Enter your Git username: " GIT_USERNAME
+    git config --global user.name "$GIT_USERNAME"
+fi
+
+if [ -z "$(git config --global user.email)" ]; then
+    read -p "Enter your Git email: " GIT_EMAIL
+    git config --global user.email "$GIT_EMAIL"
+fi
