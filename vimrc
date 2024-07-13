@@ -15,6 +15,8 @@ set history=1000
 set foldenable
 set foldlevelstart=10
 set foldnestmax=10
+set foldmethod=indent
+
 
 set autoread
 set scrolloff=7
@@ -22,6 +24,8 @@ set number
 set showmode
 set wrap
 set laststatus=2
+set statusline=\ %F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
+
 
 set expandtab
 set smarttab
@@ -49,6 +53,7 @@ set tm=500
 
 " }}}
 
+
 " PLUGINS ---------------------------------------------------------------- {{{
 "
 " :PlugInstall to install plugins
@@ -70,14 +75,21 @@ call plug#end()
 " Yank from cursor to the end of line.
 nnoremap Y y$
 
+" Space toggles folds
 nnoremap <space> za
+
+" NERDTree bindings
 nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap <F3> :NERDTreeToggle<CR>
 " nnoremap <C-f> :NERDTreeFind<CR>
 let NERDTreeIgnore=['\.git$', '\.jpg$', '\.mp4$', '\.ogg$', '\.iso$', '\.pdf$', '\.pyc$', '\.odt$', '\.png$', '\.gif$', '\.db$']
 
-
+" No more stretch
 inoremap jj <esc>
+
+" Up/down by visual, not real, lines
+nnoremap j gj
+nnoremap k gk
 
 
 " }}}
@@ -107,11 +119,28 @@ if version >= 703
     set undoreload=10000
 endif
 
+" Set some GUI-specific args
+if has("gui_running")
+    set guioptions-=T
+    set guioptions-=e
+    set t_Co=256
+    set guitablabel=%M\ %t
+endif
+
+" Set a nicer foldtext function
+set foldtext=MyFoldText()
+function! MyFoldText()
+    let line = getline(v:foldstart)
+    let nucolwidth = &fdc + &number * &numberwidth
+    let windowwidth = winwidth(0) - nucolwidth - 3
+    let foldedlinecount = v:foldend - v:foldstart + 1
+    let prefix = " ... "
+    let postfix = "「" . foldedlinecount . " lines」"
+    let line = strpart(line, 0, windowwidth - len(prefix) - len(postfix) - 2)
+    let fillcharcount = windowwidth - len(prefix) - len(line) - len(postfix)
+    return prefix . line . repeat(" ",fillcharcount) . postfix
+endfunction
+
+
 " }}}
 
-
-" STATUS LINE ------------------------------------------------------------ {{{
-
-" Status bar code goes here.
-
-" }}}
