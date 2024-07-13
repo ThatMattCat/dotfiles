@@ -13,8 +13,9 @@ sudo apt install -y vim-gtk3 #xclip
 
 # Create symlinks and prep vim folders
 ln -sf ~/dotfiles/vimrc ~/.vimrc
-rm -rf ~/.vim
-cp -r -l ~/dotfiles/vim ~/.vim
+#rm -rf ~/.vim
+#cp -r -l ~/dotfiles/vim ~/.vim
+mkdir -p ~/.vim/autoload ~/.vim/colors ~/.vim/plugged ~/.vim/backup
 ln -sf ~/dotfiles/bashrc ~/.bashrc
 ln -sf ~/dotfiles/bash_aliases ~/.bash_aliases
 
