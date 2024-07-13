@@ -1,0 +1,74 @@
+# Custom Bash Aliases
+
+alias ll="ls -thrAlF"
+alias li="ll -i"
+alias la='ls -A'
+alias l='ls -CF'
+alias h='history'
+alias pu="pushd"
+alias po="popd"
+alias k=kubectl
+
+
+#eg:   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+alias clean='echo -n "Really clean this directory?";
+        read yorn;
+        if test "$yorn" = "y"; then
+           rm -f \#* *~ .*~ *.bak .*.bak  *.tmp .*.tmp core a.out;
+           echo "Cleaned.";
+        else
+           echo "Not cleaned.";
+        fi'
+
+add-alias ()
+{
+   local name=$1 value="$2"
+   echo alias $name=\'$value\' >>~/dotfiles/.bash_aliases
+   eval alias $name=\'$value\'
+   alias $name
+}
+
+#For Csh
+alias unsetenv=unset
+function setenv () {
+  export $1="$2"
+}
+
+repeat ()
+{
+    local count="$1" i;
+    shift;
+    for i in $(_seq 1 "$count");
+    do
+        eval "$@";
+    done
+}
+# Subfunction needed by `repeat'.
+_seq ()
+{
+    local lower upper output;
+    lower=$1 upper=$2;
+
+    if [ $lower -ge $upper ]; then return; fi
+    while [ $lower -lt $upper ];
+    do
+        echo -n "$lower "
+        lower=$(($lower + 1))
+    done
+    echo "$lower"
+}
