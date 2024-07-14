@@ -39,8 +39,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
-complete -o default -F __start_kubectl k
-source <(kubectl completion bash)
+if command -v kubectl &> /dev/null
+then
+    complete -o default -F __start_kubectl k
+    source <(kubectl completion bash)
+fi
 
 # Start SSH Agent if not already running
 if [ -z "$SSH_AUTH_SOCK" ]; then
