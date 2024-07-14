@@ -141,6 +141,12 @@ function! MyFoldText()
     return prefix . line . repeat(" ",fillcharcount) . postfix
 endfunction
 
+" Save cursor position to re-open file in same location
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+    \| exe "normal! g'\"" | endif
+endif
+
 
 " }}}
 
