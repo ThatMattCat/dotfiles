@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Get directory of this script
+CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+
 main() {
 
     if test $# -eq 0; then
@@ -33,27 +37,30 @@ main() {
 }
 
 setup_bash() {
-    touch ~/.bash_eternal_history
-    echo "source ~/dotfiles/bash/bashrc" >> ~/.bashrc
+    touch ${HOME}/.bash_eternal_history
+    if ! grep -qF "source ${CWD}/bash/bashrc" ${HOME}/.bashrc; then
+        echo "source ${CWD}/bash/bashrc" >> ${HOME}/.bashrc
+    fi
     chmod +x ./bin/*
 }
 
 # This needs to be manually triggerd with arg "vim" or "all"
 setup_vim() {
-    # Install vim-gtk3 and xclip
     sudo apt update
-    sudo apt install -y vim-gtk3 #xclip so we can always paste properly
+    sudo apt install -y vim-gtk3 #xclip
 
-    mkdir -p ~/.vim/autoload ~/.vim/colors ~/.vim/plugged ~/.vim/backup ~/.vim/syntax
-    cp -R -u ./vim/syntax/* ~/.vim/syntax/
-    echo "source ~/dotfiles/vim/vimrc" >> ~/.vimrc
+    mkdir -p ${HOME}/.vim/autoload ${HOME}/.vim/colors ${HOME}/.vim/plugged ${HOME}/.vim/backup ${HOME}/.vim/syntax
+    cp -R -u ./vim/syntax/* ${HOME}/.vim/syntax/
+    if ! grep -qF "source ${CWD}/vim/vimrc" ${HOME}/.vimrc; then
+        echo "source ${CWD}/vim/vimrc" >> ${HOME}/.vimrc
+    fi
     # Install Vim plugins, colors, etc
-    if [ ! -f ~/.vim/autoload/plug.vim ]; then
-        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    if [ ! -f ${HOME}/.vim/autoload/plug.vim ]; then
+        curl -fLo ${HOME}/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     fi
 
-    if [ ! -f ~/.vim/colors/molokai.vim ]; then
-        curl -o ~/.vim/colors/molokai.vim https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim
+    if [ ! -f ${HOME}/.vim/colors/molokai.vim ]; then
+        curl -o ${HOME}/.vim/colors/molokai.vim https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim
     fi
 
     vim +PlugInstall +qall

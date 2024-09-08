@@ -1,4 +1,5 @@
 
+CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -26,13 +27,13 @@ ulimit -c 0
 shopt -s checkwinsize
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-if [ -f ./bash_aliases ]; then
-    . ./bash_aliases
+if [ -f ${CWD}/bash_aliases ]; then
+    source ${CWD}/bash_aliases
 fi
 
 # Easy-button to load colors in shell
 load_colors() {
-    [[ -f ~/dotfiles/bash_colors ]] && source ~/dotfiles/bash_colors
+    [[ -f ${CWD}/bash_colors ]] && source ${CWD}/bash_colors
 }
 load_colors
 export -f load_colors
@@ -74,7 +75,7 @@ fi
 #bash colors completion(from dotfiles/bash_colors definitions)
 _color_vars() {
     local cur=${COMP_WORDS[COMP_CWORD]}
-    COMPREPLY=( $(compgen -W "$(grep -oE '^[A-Z_]+=' ~/dotfiles/bash/bash_colors | sed 's/=$//')" -- $cur) )
+    COMPREPLY=( $(compgen -W "$(grep -oE '^[A-Z_]+=' ${CWD}/bash_colors | sed 's/=$//')" -- $cur) )
 }
 complete -F _color_vars echo -e
 

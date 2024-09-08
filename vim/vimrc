@@ -86,14 +86,13 @@ let NERDTreeIgnore=['\.git$', '\.jpg$', '\.mp4$', '\.ogg$', '\.iso$', '\.pdf$', 
 inoremap jj <esc>
 
 " Up/down by visual, not real, lines
-nnoremap k gj
-nnoremap j gk
+nnoremap j gj
+nnoremap k gk
 nnoremap <Up> gk
 nnoremap <Down> gj
 " Fun fact: j=down and k=up by default because "ex" (got wrapped by vi)
 "   was written on an ADM-3A terminal which had the h,j,k,l keys mapped to the
-"   same directions we now have in Vim. I hate it and fixed it. Change it back
-"   by swapping k and j above (eg: nnoremap j gj)
+"   same directions we now have in Vim. Swap j/k above to 'fix'
 
 " }}}
 
@@ -166,7 +165,10 @@ function! ColorVarComplete(findstart, base)
   else
     " find color variables matching with "a:base"
     let res = []
-    for line in readfile(expand('~/dotfiles/bash/bash_colors'))
+    let s:current_script_path = expand('<sfile>:p:h')
+    let s:dotfiles_path = fnamemodify(s:current_script_path, ':h')
+    let s:bash_colors_path = s:dotfiles_path . '/bash/bash_colors'
+    for line in readfile(s:bash_colors_path)
       if line =~ '^\([A-Z_]\+\)='
         let varname = matchstr(line, '^\([A-Z_]\+\)')
         if varname =~ '^' . a:base
@@ -179,7 +181,7 @@ function! ColorVarComplete(findstart, base)
 endfunction
 
 set completefunc=ColorVarComplete
-
+" TODO: fix hardcoded filepaths
 " Make :ColorPreview command to see colors we pre-defined
 function! PreviewColors()
   new
