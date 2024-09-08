@@ -4,42 +4,33 @@ main() {
 
     if test $# -eq 0; then
 	    echo "Must provide install options from: vim, bash, all"
+	    exit
     fi
     while test $# -gt 0
     do
+	echo "num args = $#"
         case "$1" in
-            "vim") setup_vim
+            "vim") echo "vim"
                 ;;
-            "bash") setup_bash
+            "bash") echo "bash"
                 ;;
-            "all") setup_bash && setup_vim
+            "all") bash && vim
                 ;;
 	    *) echo "Unknown install option"
-		        ;;
+		;;
         esac
         shift
     done
-
-    # Configure Git if not already configured
-    if [ -z "$(git config --global user.name)" ]; then
-        read -p "Enter your Git username: " GIT_USERNAME
-        git config --global user.name "$GIT_USERNAME"
-    fi
-
-    if [ -z "$(git config --global user.email)" ]; then
-        read -p "Enter your Git email: " GIT_EMAIL
-        git config --global user.email "$GIT_EMAIL"
-    fi
 }
 
-setup_bash() {
+bash() {
     touch ~/.bash_eternal_history
     echo "source ~/dotfiles/bash/bashrc" >> ~/.bashrc
     chmod +x ./bin/*
 }
 
 # This needs to be manually triggerd with arg "vim" or "all"
-setup_vim() {
+vim() {
     # Install vim-gtk3 and xclip
     sudo apt update
     sudo apt install -y vim-gtk3 #xclip so we can always paste properly

@@ -5,15 +5,39 @@ case $- in
       *) return;;
 esac
 
+### These two fn's avoid path growth in nested shells in case
+### we modify PATH in bashrc, not a huge deal either way
+### Usage: path_append "/path/to/some/bin"
+
+# Function to add a directory to PATH if it's not already there
+path_append() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+# Function to prepend a directory to PATH if it's not already there
+path_prepend() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="$1${PATH:+":$PATH"}"
+    fi
+}
+
 ulimit -c 0
 shopt -s checkwinsize
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f ./bash_aliases ]; then
+    . ./bash_aliases
 fi
 
-# make less more friendly for non-text input files, see lesspipe(1)
+# Easy-button to load colors in shell
+load_colors() {
+    [[ -f ~/dotfiles/bash_colors ]] && source ~/dotfiles/bash_colors
+}
+load_colors
+export -f load_colors
+
+# make 'less' more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
@@ -31,6 +55,7 @@ xterm*|rxvt*)
     ;;
 esac
 
+# Bash completion
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
@@ -39,11 +64,19 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# kubectl completion(if kubectl installed)
 if command -v kubectl &> /dev/null
 then
     complete -o default -F __start_kubectl k
     source <(kubectl completion bash)
 fi
+
+#bash colors completion(from dotfiles/bash_colors definitions)
+_color_vars() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    COMPREPLY=( $(compgen -W "$(grep -oE '^[A-Z_]+=' ~/dotfiles/bash_colors | sed 's/=$//')" -- $cur) )
+}
+complete -F _color_vars echo -e
 
 # Start SSH Agent if not already running
 if [ -z "$SSH_AUTH_SOCK" ]; then
@@ -52,16 +85,17 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
     if [ -z "$ssh_agent_pid" ]; then
         # Start a new ssh-agent
         eval "$(ssh-agent -s)"
-        echo "Started new SSH agent"
+#        echo "Started new SSH agent"
     else
         # Connect to the running ssh-agent
         export SSH_AGENT_PID=$ssh_agent_pid
         export SSH_AUTH_SOCK=$(find /tmp -uid $(id -u) -type s -name agent.\* 2>/dev/null | head -n 1)
         if [ -z "$SSH_AUTH_SOCK" ]; then
-            echo "Found SSH agent but couldn't locate socket. Starting new agent."
+#            echo "Found SSH agent but couldn't locate socket. Starting new agent."
             eval "$(ssh-agent -s)"
-        else
-            echo "Connected to running SSH agent"
+#        else
+#            echo "Connected to running SSH agent"
+            
         fi
     fi
 fi
@@ -82,3 +116,26 @@ export HISTFILE=~/.bash_eternal_history
 # Force prompt to write history after every command.
 # http://superuser.com/questions/20900/bash-history-loss
 PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND} ;}history -a";
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/matt/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/matt/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/matt/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/matt/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+# cuda, nvcc, etc..these shouldn't be here...eh, PFAD
+#export PATH="/usr/local/cuda-12.2/bin:$PATH"
+path_prepend "/usr/local/cuda-12.2/bin"
+
+# Keep at end of bashrc so we dont override anything by accident
+# TODO: user home paths need to be variableized, tilde is a no-go
+path_append "~/dotfiles/bin"

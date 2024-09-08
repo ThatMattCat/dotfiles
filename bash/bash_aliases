@@ -1,5 +1,6 @@
 # Custom Bash Aliases
 
+#alias jup="~/code/jupyter/launch_jupyter.sh"
 alias ll="ls -thrAlF"
 alias li="ll -i"
 alias la='ls -A'
@@ -38,7 +39,7 @@ alias clean='echo -n "Really clean this directory?";
 add-alias ()
 {
    local name=$1 value="$2"
-   echo alias $name=\'$value\' >>~/dotfiles/.bash_aliases
+   echo alias $name=\'$value\' >> ~/dotfiles/bash/bash_aliases
    eval alias $name=\'$value\'
    alias $name
 }
