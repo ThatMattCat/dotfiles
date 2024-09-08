@@ -74,7 +74,7 @@ fi
 #bash colors completion(from dotfiles/bash_colors definitions)
 _color_vars() {
     local cur=${COMP_WORDS[COMP_CWORD]}
-    COMPREPLY=( $(compgen -W "$(grep -oE '^[A-Z_]+=' ~/dotfiles/bash_colors | sed 's/=$//')" -- $cur) )
+    COMPREPLY=( $(compgen -W "$(grep -oE '^[A-Z_]+=' ~/dotfiles/bash/bash_colors | sed 's/=$//')" -- $cur) )
 }
 complete -F _color_vars echo -e
 
@@ -116,25 +116,6 @@ export HISTFILE=~/.bash_eternal_history
 # Force prompt to write history after every command.
 # http://superuser.com/questions/20900/bash-history-loss
 PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND} ;}history -a";
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/matt/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/matt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/matt/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/matt/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-# cuda, nvcc, etc..these shouldn't be here...eh, PFAD
-#export PATH="/usr/local/cuda-12.2/bin:$PATH"
-path_prepend "/usr/local/cuda-12.2/bin"
 
 # Keep at end of bashrc so we dont override anything by accident
 # TODO: user home paths need to be variableized, tilde is a no-go
