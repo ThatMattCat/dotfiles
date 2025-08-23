@@ -181,12 +181,14 @@ function! ColorVarComplete(findstart, base)
 endfunction
 
 set completefunc=ColorVarComplete
-" TODO: fix hardcoded filepaths
 " Make :ColorPreview command to see colors we pre-defined
 function! PreviewColors()
   new
   setlocal buftype=nofile bufhidden=hide noswapfile
-  let colors = systemlist('source ~/dotfiles/bash/bash_colors && compgen -v | grep -E "^[A-Z_]+$" | while read var; do [[ "${!var}" == *"\033["* ]] && echo "$var=${!var}"; done')
+  let s:current_script_path = expand('<sfile>:p:h')
+  let s:dotfiles_path = fnamemodify(s:current_script_path, ':h')
+  let s:bash_colors_path = s:dotfiles_path . '/bash/bash_colors'
+  let colors = systemlist('source ' . shellescape(s:bash_colors_path) . ' && compgen -v | grep -E "^[A-Z_]+$" | while read var; do [[ "${!var}" == *"\033["* ]] && echo "$var=${!var}"; done')
   for color in colors
     let [var, val] = split(color, '=')
     call append(line('$'), printf('%s%s %s\033[0m', val, var, val))

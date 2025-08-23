@@ -39,15 +39,15 @@ alias clean='echo -n "Really clean this directory?";
 add-alias ()
 {
    local name=$1 value="$2"
-   echo alias $name=\'$value\' >> ~/dotfiles/bash/bash_aliases
-   eval alias $name=\'$value\'
-   alias $name
+   echo alias "$name"=\'"$value"\' >> "${CWD}/bash_aliases"
+   eval alias "$name"=\'"$value"\'
+   alias "$name"
 }
 
 #For Csh
 alias unsetenv=unset
 function setenv () {
-  export $1="$2"
+  export "$1"="$2"
 }
 
 repeat ()
@@ -62,14 +62,14 @@ repeat ()
 # Subfunction needed by `repeat'.
 _seq ()
 {
-    local lower upper output;
+    local lower upper
     lower=$1 upper=$2;
 
-    if [ $lower -ge $upper ]; then return; fi
-    while [ $lower -lt $upper ];
+    if [ "$lower" -ge "$upper" ]; then return; fi
+    while [ "$lower" -lt "$upper" ];
     do
         echo -n "$lower "
-        lower=$(($lower + 1))
+        lower=$((lower + 1))
     done
     echo "$lower"
 }

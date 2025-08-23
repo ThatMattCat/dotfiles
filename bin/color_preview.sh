@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Get the directory of this script to find the dotfiles root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+DOTFILES_DIR="$( dirname "${SCRIPT_DIR}" )"
 
-source ~/dotfiles/bash/bash_colors
+source "${DOTFILES_DIR}/bash/bash_colors"
 
 # Function to print color samples
 print_color_sample() {
