@@ -27,13 +27,13 @@ ulimit -c 0
 shopt -s checkwinsize
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-if [ -f ${CWD}/bash_aliases ]; then
-    source ${CWD}/bash_aliases
+if [ -f "${CWD}/bash_aliases" ]; then
+    source "${CWD}/bash_aliases"
 fi
 
 # Easy-button to load colors in shell
 load_colors() {
-    [[ -f ${CWD}/bash_colors ]] && source ${CWD}/bash_colors
+    [[ -f "${CWD}/bash_colors" ]] && source "${CWD}/bash_colors"
 }
 load_colors
 export -f load_colors
@@ -75,7 +75,7 @@ fi
 #bash colors completion(from dotfiles/bash_colors definitions)
 _color_vars() {
     local cur=${COMP_WORDS[COMP_CWORD]}
-    COMPREPLY=( $(compgen -W "$(grep -oE '^[A-Z_]+=' ${CWD}/bash_colors | sed 's/=$//')" -- $cur) )
+    mapfile -t COMPREPLY < <(compgen -W "$(grep -oE '^[A-Z_]+=' "${CWD}/bash_colors" | sed 's/=$//')" -- "$cur")
 }
 complete -F _color_vars echo -e
 
@@ -119,5 +119,4 @@ export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND} ;}history -a";
 
 # Keep at end of bashrc so we dont override anything by accident
-# TODO: user home paths need to be variableized, tilde is a no-go
-path_append "~/dotfiles/bin"
+path_append "${CWD}/../bin"
